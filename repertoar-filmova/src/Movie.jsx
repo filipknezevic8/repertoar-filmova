@@ -4,13 +4,25 @@ const Movie = (props) => {
     return (
         <div className="container">
             <div className="image">
-                <img alt="movie" src="https://i.pinimg.com/736x/aa/f7/05/aaf705e06726ce3881288ae4be3ac5fe.jpg"/>
+                <img src={props.poster} alt="movie"/>
             </div>
             <div className="movie">
-                {props.title}, sala: {props.hall}, cena: {props.price}din
+                <div>
+                    {props.title}
+                    {props.hall ? `, sala: ${props.hall}` : ", Film još uvek nije u ponudi"}
+                    , cena: {props.price ? props.price : 300}din
+                </div>
+                <div className="actions">
+                    <button onClick={() => props.onReact(props.title, "Like")}>
+                        Like
+                    </button>
+                    <button onClick={() => props.onReact(props.title, "Dislike")}>
+                        Dislike
+                    </button>
+                </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default Movie;
