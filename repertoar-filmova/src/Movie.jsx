@@ -4,7 +4,7 @@ const Movie = (props) => {
     return (
         <div className="container">
             <div className="image">
-                <img src={props.poster} alt="movie"/>
+                <img className="size-1" src={props.poster} alt="movie"/>
             </div>
             <div className="movie">
                 <div>
