@@ -122,14 +122,11 @@ const AuthorInfo = () => {
 };
 
 const Movies = () => {
-  const handleReaction = (title, reaction) => {
-    alert(`Dodelili ste "${reaction}" za film "${title}"!`);
-  };
   return (
     <div>
       <h1>Repertoar za danas ({new Date().toLocaleDateString("sr-RS")})</h1>
       {movies.map(m => (
-        <Movie key={m.title} title={m.title} hall={m.hall} price={m.price} poster={m.poster} onReact={handleReaction}/>
+        <Movie key={m.title} title={m.title} hall={m.hall} price={m.price} poster={m.poster}/>
       ))}
     </div>
   );
