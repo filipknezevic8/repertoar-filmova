@@ -10,7 +10,7 @@ const Movie = (props) => {
     const onDislike = async () => {
         setDislikes(prev => prev + 1);
     }
-    
+
     return (
         <div className="container">
             <div className="image">
@@ -33,6 +33,9 @@ const Movie = (props) => {
                     <button onClick={() => onDislike()}>
                         Dislike
                     </button>
+                </div>
+                <div>
+                    <button onClick={props.onEdit}>Edit</button>
                 </div>
             </div>
         </div>
