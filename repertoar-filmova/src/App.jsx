@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Movie from "./Movie";
 import "./styles/main.scss";
 import { BrowserRouter, Routes, Route, Link, Outlet } from "react-router-dom";
@@ -126,6 +126,42 @@ const Movies = () => {
     }
   ]);
 
+  const [ratings, setRatings] = useState({});
+  const [bestMovieTitle, setBestMovieTitle] = useState(null);
+
+  useEffect(() => {
+    console.log("Postavka filmova");
+
+    return () => {
+      console.log("Sklanjanje filmova");
+    };
+  }, []);
+
+  useEffect(() => {
+    let best = null;
+    let bestScore = -Infinity;
+    movies.forEach(m => {
+      const r = ratings[m.title];
+      if (!r) return;
+
+      const score = r.likes - r.dislikes;
+
+      if (score > bestScore) {
+        bestScore = score;
+        best = m.title;
+      }
+    });
+
+    setBestMovieTitle(best);
+  }, [ratings, movies]);
+
+  const handleRatingChange = (title, likes, dislikes) => {
+    setRatings(prev => ({
+      ...prev,
+      [title]: { likes, dislikes }
+    }));
+  };
+  
   const addNewMovie = (movie) => {
     console.log('data in parent', movie);
     setMovies(prev => [...prev, movie]);
@@ -136,15 +172,44 @@ const Movies = () => {
     setEditingMovie(null);
   };
 
+  const bestMovie = movies.find(m => m.title === bestMovieTitle);
+
   return (
     <div>
       <h1>Repertoar za danas ({new Date().toLocaleDateString("sr-RS")})</h1>
+      {bestMovie && (
+        <div>
+          <h2>Najbolje ocenjen film</h2>
+          <Movie
+            key={bestMovie.title}
+            title={bestMovie.title}
+            hall={bestMovie.hall}
+            price={bestMovie.price}
+            poster={bestMovie.poster}
+            onEdit={() => setEditingMovie(bestMovie)}
+            onRatingChange={handleRatingChange}
+          />
+        </div>
+      )}
+      <hr/>
       <div>
-        {editingMovie ? (<EditMovieForm movie={editingMovie} onUpdate={editMovie} />) :
-        (movies.map(m => (
-          <Movie key={m.title} title={m.title} hall={m.hall} price={m.price} poster={m.poster} onEdit={() => setEditingMovie(m)} />
-        )))
-        }
+        {editingMovie ? (
+          <EditMovieForm movie={editingMovie} onUpdate={editMovie} />
+        ) : (
+          movies
+            .filter(m => m.title !== bestMovieTitle)
+            .map(m => (
+              <Movie
+                key={m.title}
+                title={m.title}
+                hall={m.hall}
+                price={m.price}
+                poster={m.poster}
+                onEdit={() => setEditingMovie(m)}
+                onRatingChange={handleRatingChange}
+              />
+            ))
+        )}
       </div>
       <br/>
       {editingMovie === null && <MovieForm onSubmit={addNewMovie} />}

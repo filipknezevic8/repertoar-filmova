@@ -1,9 +1,23 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 
 const Movie = (props) => {
     const [likes, setLikes] = useState(0);
     const [dislikes, setDislikes] = useState(0);
 
+    useEffect(() => {
+        const randomLikes = Math.floor(Math.random() * 5) + 1;
+        const randomDislikes = Math.floor(Math.random() * 5) + 1;
+
+        setLikes(randomLikes);
+        setDislikes(randomDislikes);
+    }, []);
+
+    useEffect(() => {
+        if (props.onRatingChange) {
+            props.onRatingChange(props.title, likes, dislikes);
+        }
+    }, [likes, dislikes]);
+    
     const onLike = async () => {
         setLikes(prev => prev + 1);
     }
