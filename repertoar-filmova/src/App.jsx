@@ -4,6 +4,10 @@ import "./styles/main.scss";
 import { BrowserRouter, Routes, Route, Link, Outlet } from "react-router-dom";
 import MovieForm from "./MovieForm";
 import EditMovieForm from "./EditMovieForm";
+import { fetchMovies } from "./services/movies";
+import AddMovie from "./AddMovie";
+import EditMovie from "./EditMovie";
+import Spinner from "./Spinner";
 
 const App = () => {
   return (
@@ -16,6 +20,8 @@ const App = () => {
           <Route path="author" element={<AuthorInfo />}></Route>
         </Route>
         <Route path="/movies" element={<Movies />}></Route>
+        <Route path="/movies/add" element={<AddMovie />}></Route>
+        <Route path="/movies/:id" element={<EditMovie />}></Route>
       </Routes>
       <Footer />
     </BrowserRouter>
@@ -31,6 +37,7 @@ const Header = () => {
         <Link to="/about/app">App</Link><br></br>
         <Link to="/about/author">Author</Link><br></br>
         <Link to="/movies">Movies</Link><br></br>
+        <Link to="/movies/add">Add movie</Link><br></br>
       </nav>
     </header>
   );
@@ -94,43 +101,28 @@ const AuthorInfo = () => {
 };
 
 const Movies = () => {
-  const [editingMovie, setEditingMovie] = useState(null);
-  
-  const [movies, setMovies] = useState([
-    {
-      title: "Captain America - The First Avenger",
-      hall: 2,
-      price: 350,
-      poster: "https://m.media-amazon.com/images/I/51Xp+8qDCbL._AC_UF350,350_QL50_.jpg"
-    },
-    {
-      title: "The Papillon",
-      hall: 1,
-      price: 300,
-      poster: "https://m.media-amazon.com/images/M/MV5BMjIxMTMyOTE2NF5BMl5BanBnXkFtZTgwMDYyNzY1NTM@._V1_.jpg"
-    },
-    {
-      title: "The Lost City of Z",
-      hall: 5,
-      price: 350,
-      poster: "https://m.media-amazon.com/images/M/MV5BZmU2ODIyMWItMjU3Zi00ZmVhLWIyNDAtMWE5OWU2ZDExMGFiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
-    },
-    {
-      title: "Klaus",
-      hall: 3,
-      poster: "https://m.media-amazon.com/images/I/7128yjOjl9L.jpg"
-    },
-    {
-      title: "Bullet Train",
-      poster: "https://m.media-amazon.com/images/I/71INz6LX8aL._AC_UF894,1000_QL80_.jpg"
-    }
-  ]);
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [ratings, setRatings] = useState({});
   const [bestMovieTitle, setBestMovieTitle] = useState(null);
 
+  const getMovies = async () => {
+    setLoading(true)
+    try {
+      const data = await fetchMovies()
+      setMovies(data)
+    } catch (error) {
+      alert(error)
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     console.log("Postavka filmova");
+    getMovies()
 
     return () => {
       console.log("Sklanjanje filmova");
@@ -141,48 +133,49 @@ const Movies = () => {
     let best = null;
     let bestScore = -Infinity;
     movies.forEach(m => {
-      const r = ratings[m.title];
+      const r = ratings[m.name];
       if (!r) return;
 
       const score = r.likes - r.dislikes;
 
       if (score > bestScore) {
         bestScore = score;
-        best = m.title;
+        best = m.name;
       }
     });
 
     setBestMovieTitle(best);
   }, [ratings, movies]);
 
-  const handleRatingChange = (title, likes, dislikes) => {
+  const handleRatingChange = (name, likes, dislikes) => {
     setRatings(prev => ({
       ...prev,
-      [title]: { likes, dislikes }
+      [name]: { likes, dislikes }
     }));
   };
   
-  const addNewMovie = (movie) => {
-    console.log('data in parent', movie);
-    setMovies(prev => [...prev, movie]);
-  };
+  // const addNewMovie = (movie) => {
+  //   console.log('data in parent', movie);
+  //   setMovies(prev => [...prev, movie]);
+  // };
 
-  const editMovie = (data) => {
-    setMovies(prev => prev.map(element =>(element.title === data.title ? data : element)));
-    setEditingMovie(null);
-  };
+  // const editMovie = (data) => {
+  //   setMovies(prev => prev.map(element =>(element.name === data.name ? data : element)));
+  //   setEditingMovie(null);
+  // };
 
-  const bestMovie = movies.find(m => m.title === bestMovieTitle);
+  // const bestMovie = movies.find(m => m.name === bestMovieTitle);
 
   return (
     <div>
       <h1>Repertoar za danas ({new Date().toLocaleDateString("sr-RS")})</h1>
-      {bestMovie && (
+      {loading && <Spinner />}
+      {/* {bestMovie && (
         <div>
           <h2>Najbolje ocenjen film</h2>
           <Movie
-            key={bestMovie.title}
-            title={bestMovie.title}
+            key={bestMovie.name}
+            name={bestMovie.name}
             hall={bestMovie.hall}
             price={bestMovie.price}
             poster={bestMovie.poster}
@@ -190,29 +183,45 @@ const Movies = () => {
             onRatingChange={handleRatingChange}
           />
         </div>
-      )}
-      <hr/>
-      <div>
+      )} */}
+      {/* <hr/> */}
+      {/* <div>
         {editingMovie ? (
           <EditMovieForm movie={editingMovie} onUpdate={editMovie} />
         ) : (
           movies
-            .filter(m => m.title !== bestMovieTitle)
+            .filter(m => m.name !== bestMovieTitle)
             .map(m => (
               <Movie
-                key={m.title}
-                title={m.title}
+                key={m.name}
+                name={m.name}
                 hall={m.hall}
                 price={m.price}
                 poster={m.poster}
+                movieId={m.id}
                 onEdit={() => setEditingMovie(m)}
                 onRatingChange={handleRatingChange}
               />
             ))
         )}
+      </div> */}
+      <div>
+        {movies
+            .map(m => (
+              <Movie
+                key={m.name}
+                name={m.name}
+                hall={m.hall}
+                price={m.price}
+                poster={m.poster}
+                movieId={m.id}
+                onRatingChange={handleRatingChange}
+              />
+            ))}
       </div>
       <br/>
-      {editingMovie === null && <MovieForm onSubmit={addNewMovie} />}
+      {/* {editingMovie === null && <MovieForm onSubmit={addNewMovie} />} */}
+      <Link to="/movies/add">Add new movie</Link>
     </div>
   );
 };

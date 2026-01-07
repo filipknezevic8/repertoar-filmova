@@ -1,8 +1,11 @@
 import React, {useState, useEffect} from "react";
+import { useNavigate } from "react-router-dom";
 
 const Movie = (props) => {
     const [likes, setLikes] = useState(0);
     const [dislikes, setDislikes] = useState(0);
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         const randomLikes = Math.floor(Math.random() * 5) + 1;
@@ -14,7 +17,7 @@ const Movie = (props) => {
 
     useEffect(() => {
         if (props.onRatingChange) {
-            props.onRatingChange(props.title, likes, dislikes);
+            props.onRatingChange(props.name, likes, dislikes);
         }
     }, [likes, dislikes]);
     
@@ -32,7 +35,7 @@ const Movie = (props) => {
             </div>
             <div className="movie">
                 <div>
-                    {props.title}
+                    {props.name}
                     {props.hall ? `, sala: ${props.hall}` : ", Film još uvek nije u ponudi"}
                     , cena: {props.price ? props.price : 300}din
                 </div>
@@ -48,8 +51,9 @@ const Movie = (props) => {
                         Dislike
                     </button>
                 </div>
+                <br/>
                 <div>
-                    <button onClick={props.onEdit}>Edit</button>
+                    <button onClick={() => navigate(`/movies/${props.movieId}`)}>Edit</button>
                 </div>
             </div>
         </div>

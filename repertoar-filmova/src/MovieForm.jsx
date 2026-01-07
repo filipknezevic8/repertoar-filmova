@@ -1,13 +1,24 @@
 import React from "react";
 import {useForm} from "react-hook-form";
 
-const MovieForm = ({onSubmit}) => {
+const MovieForm = ({onSubmit, movie, buttonLabel="Save movie"}) => {
+    const formatMovieData = () => {
+        return {
+            name: "",
+            hall: "",
+            price: "",
+            poster: ""
+        }
+    }
+
     const {
         register,
         handleSubmit,
         formState: {errors},
         reset
-    } = useForm();
+    } = useForm({
+        defaultValues: formatMovieData(movie)
+    });
 
     const onFormSubmit = (data) => {
         console.log(data);
@@ -19,7 +30,7 @@ const MovieForm = ({onSubmit}) => {
         <form onSubmit={handleSubmit(onFormSubmit)}>
             <div>
                 <label>Movie name:</label>
-                <input {...register("title", { required: "Name is required"})}
+                <input {...register("name", { required: "Name is required"})}
                     placeholder="Movie name"/>
                 {errors.title && <span>{errors.title.message}</span>}
             </div>
