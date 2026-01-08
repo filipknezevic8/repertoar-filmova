@@ -35,3 +35,30 @@ export const updateMovie = async (movieId, data) => {
         throw new Error('Failed to update movie');
     }
 }
+
+export const deleteMovie = async (movieId) => {
+    try {
+        const response = await Axios.delete(`/Movies/${movieId}`);
+        return response.data;
+    } catch (error) {
+        throw new Error('Failed to delete movie');
+    }
+}
+
+export const likeMovie = async (movieId) => {
+    try {
+        const response = await Axios.put(`/Movies/${movieId}/like`);
+        return response.data;
+    } catch (error) {
+        throw new Error('Failed to like movie');
+    }
+}
+
+export const dislikeMovie = async (movieId) => {
+    try {
+        const response = await Axios.put(`/Movies/${movieId}/dislike`);
+        return response.data;
+    } catch (error) {
+        throw new Error('Failed to dislike movie');
+    }
+}

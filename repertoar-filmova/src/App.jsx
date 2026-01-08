@@ -4,7 +4,7 @@ import "./styles/main.scss";
 import { BrowserRouter, Routes, Route, Link, Outlet } from "react-router-dom";
 import MovieForm from "./MovieForm";
 import EditMovieForm from "./EditMovieForm";
-import { fetchMovies } from "./services/movies";
+import { fetchMovies, deleteMovie } from "./services/movies";
 import AddMovie from "./AddMovie";
 import EditMovie from "./EditMovie";
 import Spinner from "./Spinner";
@@ -120,6 +120,15 @@ const Movies = () => {
     }
   }
 
+  const onDelete = async (id) => {
+    try {
+      await deleteMovie(id);
+      setMovies(movies.filter(m => m.id !== id));
+    } catch (error) {
+      alert(error);
+    }
+  };
+
   useEffect(() => {
     console.log("Postavka filmova");
     getMovies()
@@ -216,6 +225,7 @@ const Movies = () => {
                 poster={m.poster}
                 movieId={m.id}
                 onRatingChange={handleRatingChange}
+                onDelete={onDelete}
               />
             ))}
       </div>

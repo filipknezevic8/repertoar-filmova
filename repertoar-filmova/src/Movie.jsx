@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
+import { likeMovie, dislikeMovie } from "./services/movies";
 
 const Movie = (props) => {
     const [likes, setLikes] = useState(0);
@@ -22,11 +23,22 @@ const Movie = (props) => {
     }, [likes, dislikes]);
     
     const onLike = async () => {
-        setLikes(prev => prev + 1);
-    }
+        try {
+            await likeMovie(props.movieId);
+            setLikes(likes + 1);
+        } catch (error) {
+            alert(error);
+        }
+    };
+
     const onDislike = async () => {
-        setDislikes(prev => prev + 1);
-    }
+        try {
+            await dislikeMovie(props.movieId);
+            setDislikes(dislikes + 1);
+        } catch (error) {
+            alert(error);
+        }
+    };
 
     return (
         <div className="container">
@@ -52,8 +64,9 @@ const Movie = (props) => {
                     </button>
                 </div>
                 <br/>
-                <div>
+                <div className="actions">
                     <button onClick={() => navigate(`/movies/${props.movieId}`)}>Edit</button>
+                    <button onClick={() => props.onDelete(props.movieId)}>Delete</button>
                 </div>
             </div>
         </div>
